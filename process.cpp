@@ -12,10 +12,14 @@ int three_diff_frame(VideoCapture * stream_ptr, int delay_ms) {
 
 	bool stop = false;
 	while (!stop) {
+		// if there is no next frame, stop the process
 		if (!stream_ptr->read(frame)) {
 			break;
 		}
 		
+		// convert the frame into Gray
+		cvtColor(frame, frame, CV_BGR2GRAY);
+
 		imshow("camera", frame);
 
 		// delay for next frame
