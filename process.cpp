@@ -22,7 +22,11 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 	gen_2_gray_diff_frames(cur_frame_position, &diff_frame1, &diff_frame2, 
 		&frame1, &frame2, &frame3);
 	combine_diff_frames(&frame_disp, &diff_frame1, &diff_frame2);
+
 	imshow("camera", frame_disp);
+	if (out_stream_ptr) {
+		(*out_stream_ptr).write(frame_disp);
+	}
 
 	bool stop = false;
 	while (!stop) {
@@ -53,6 +57,9 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 		combine_diff_frames(&frame_disp, &diff_frame1, &diff_frame2);
 
 		imshow("camera", frame_disp);
+		if (out_stream_ptr) {
+			(*out_stream_ptr).write(frame_disp);
+		}
 
 		// delay for next frame
 		// and press any key to stop

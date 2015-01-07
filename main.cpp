@@ -6,12 +6,13 @@
 #define IN_STREAM_NAME "camera2.avi"
 #define OUT_STREAM_NAME "disp2.avi"
 
+#undef OUT_STREAM_NAME
+
 using namespace cv;
 using namespace std;
 
 int main()
 {
-#undef OUT_STREAM_NAME
 	// open input video stream
 	cv::VideoCapture in_stream(IN_STREAM_NAME);
 	if (!in_stream.isOpened()) {
