@@ -10,7 +10,8 @@
 #include <opencv2/highgui/highgui.hpp>
 
 // Processing algorithm
-int three_diff_frame(cv::VideoCapture *stream_ptr, int delay_ms);
+int three_diff_frame(cv::VideoCapture *in_stream_ptr, int delay_ms,
+	cv::VideoWriter *out_stream_ptr = NULL);
 
 // Helper: determine the buffer to store the next frame
 int get_next_frame_position(int current_position);

@@ -11,6 +11,7 @@ using namespace std;
 
 int main()
 {
+#undef OUT_STREAM_NAME
 	// open input video stream
 	cv::VideoCapture in_stream(IN_STREAM_NAME);
 	if (!in_stream.isOpened()) {
@@ -31,6 +32,9 @@ int main()
 	}
 	cout << "FPS: " << frame_rate << endl;
 
+	// delay between each frame in ms
+	int delay = 1000 / frame_rate;
+
 
 	// open output video stream, if necessary
 #ifdef OUT_STREAM_NAME
@@ -40,19 +44,18 @@ int main()
 		cout << "Fatal error: can\'t create write stream." << endl;
 		return 1;
 	}
+	// process, display and record the video
+	three_diff_frame(&in_stream, delay, &out_stream);
 #else
-	cv::VideoWriter out_stream();
-#endif
-
-	// delay between each frame in ms
-	int delay = 1000 / frame_rate;
-
-	// call the algorithm to process and display the video
+	// process and display the video
 	three_diff_frame(&in_stream, delay);
+#endif
 
 	// close the streams
 	in_stream.release();
+#ifdef OUT_STREAM_NAME
 	out_stream.release();
+#endif
 
 	return 0;
 }
