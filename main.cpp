@@ -3,9 +3,12 @@
 
 #include "main.hpp"
 
+#define IN_STREAM_PORT 0
 #define IN_STREAM_NAME "camera2.avi"
 #define OUT_STREAM_NAME "disp2.avi"
 
+//#undef IN_STREAM_PORT
+#undef IN_STREAM_NAME
 #undef OUT_STREAM_NAME
 
 using namespace cv;
@@ -14,7 +17,12 @@ using namespace std;
 int main()
 {
 	// open input video stream
+#ifdef IN_STREAM_NAME
 	cv::VideoCapture in_stream(IN_STREAM_NAME);
+#endif
+#ifdef IN_STREAM_PORT
+	cv::VideoCapture in_stream(IN_STREAM_PORT);
+#endif
 	if (!in_stream.isOpened()) {
 		cout << "Fatal error: can\'t read from video stream." << endl;
 		return 1;
@@ -27,10 +35,15 @@ int main()
 	int fourcc = CV_FOURCC('X', 'V', 'I', 'D');
 
 	// get the frame rate
+#ifdef IN_STREAM_NAME
 	double frame_rate = in_stream.get(CV_CAP_PROP_FPS);
 	if (isnan(frame_rate)) {
 		frame_rate = 25;
 	}
+#endif
+#ifdef IN_STREAM_PORT
+	double frame_rate = 25;
+#endif
 	cout << "FPS: " << frame_rate << endl;
 
 	// delay between each frame in ms
