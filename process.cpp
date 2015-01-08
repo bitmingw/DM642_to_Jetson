@@ -72,7 +72,7 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 
 int get_next_frame_position(int current_position) {
 	if (current_position == 1 || current_position == 2) {
-		return current_position++;
+		return current_position + 1;
 	} else {
 		return 1;
 	}

@@ -7,8 +7,8 @@
 #define IN_STREAM_NAME "camera2.avi"
 #define OUT_STREAM_NAME "disp2.avi"
 
-//#undef IN_STREAM_PORT
-#undef IN_STREAM_NAME
+#undef IN_STREAM_PORT
+//#undef IN_STREAM_NAME
 #undef OUT_STREAM_NAME
 
 using namespace cv;
