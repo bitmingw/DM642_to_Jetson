@@ -3,29 +3,74 @@
 
 #include "main.hpp"
 
-#define IN_STREAM_PORT 0
-#define IN_STREAM_NAME "camera2.avi"
-#define OUT_STREAM_NAME "disp2.avi"
-
-#undef IN_STREAM_PORT
-//#undef IN_STREAM_NAME
-#undef OUT_STREAM_NAME
-
 using namespace cv;
 using namespace std;
 
-int main()
+int main(int argc, char **argv)
 {
-	// open input video stream
-#ifdef IN_STREAM_NAME
-	cv::VideoCapture in_stream(IN_STREAM_NAME);
-#endif
-#ifdef IN_STREAM_PORT
-	cv::VideoCapture in_stream(IN_STREAM_PORT);
-#endif
-	if (!in_stream.isOpened()) {
-		cout << "Fatal error: can\'t read from video stream." << endl;
+	// read command line arguments 
+	char *in_stream_name = NULL;
+	char *in_stream_port_str = NULL;
+	int in_stream_port = -1;
+	char *out_stream_name = NULL;
+	char *frame_rate_str = NULL;
+	double frame_rate = 25.0;
+
+	int op;
+	while ((op = getopt(argc, argv, "i:p:o:f:")) != -1) {
+		switch (op) {
+			case 'i':
+				in_stream_name = optarg;
+				break;
+			case 'p':
+				in_stream_port_str = optarg;
+				break;
+			case 'o':
+				out_stream_name = optarg;
+				break;
+			case 'f':
+				frame_rate_str = optarg;
+				break;
+			default:
+				cerr << "Wrong arguments!" << endl;
+				print_usage();
+				return 1;
+		}
+	}
+
+	// report usage of program when no argument is given
+	if (optind == 1) {
+		print_usage();	
 		return 1;
+	}
+
+	// open a default video stream for reading
+	cv::VideoCapture in_stream(0);
+
+	// try to open video port if -p is set
+	if (in_stream_port_str) {
+		in_stream_port = atoi(in_stream_port_str);
+		in_stream = VideoCapture(in_stream_port);
+		// if can't open port and no -i is given, terminate with error
+		if (!in_stream.isOpened()) {
+			in_stream_port_str = NULL;
+			if (!in_stream_name) {
+				cerr << "Fatal error: can\'t read from video port " \
+				<< in_stream_port << '.' << endl;
+				return 1;
+			}
+		}
+	} 
+	
+	// try to read video file if -i is set
+	if (in_stream_name && !in_stream_port_str) {
+		in_stream = VideoCapture(in_stream_name);
+		// if can't open video file, terminate with error
+		if (!in_stream.isOpened()) {
+			cerr << "Fatal error: can\'t read from video file " \
+			<< in_stream_name << '.' << endl;
+			return 1;
+		}
 	}
 
 	// get the frame size
@@ -34,42 +79,42 @@ int main()
 	cv::Size frame_size = Size(frame_w, frame_h);
 	int fourcc = CV_FOURCC('X', 'V', 'I', 'D');
 
-	// get the frame rate
-#ifdef IN_STREAM_NAME
-	double frame_rate = in_stream.get(CV_CAP_PROP_FPS);
-	if (isnan(frame_rate)) {
-		frame_rate = 25;
+	// get the frame rate 
+	if (frame_rate_str) {
+		frame_rate = atof(frame_rate_str);
 	}
-#endif
-#ifdef IN_STREAM_PORT
-	double frame_rate = 25;
-#endif
 	cout << "FPS: " << frame_rate << endl;
 
 	// delay between each frame in ms
 	int delay = 1000 / frame_rate;
 
 
-	// open output video stream, if necessary
-#ifdef OUT_STREAM_NAME
-	cv::VideoWriter out_stream(OUT_STREAM_NAME, fourcc, 
-		frame_rate, frame_size); 
-	if (!out_stream.isOpened()) {
-		cout << "Fatal error: can\'t create write stream." << endl;
-		return 1;
-	}
-	// process, display and record the video
-	three_diff_frame(&in_stream, delay, &out_stream);
-#else
-	// process and display the video
-	three_diff_frame(&in_stream, delay);
-#endif
+	// try to write video file if -o is set
+	if (out_stream_name) {
+		cv::VideoWriter out_stream(out_stream_name, fourcc, 
+			frame_rate, frame_size); 
+		// if can't write to video file, terminate with error
+		if (!out_stream.isOpened()) {
+			cerr << "Fatal error: can\'t create write stream " \
+			<< out_stream_name << '.' << endl;
+			return 1;
+		}
 
-	// close the streams
-	in_stream.release();
-#ifdef OUT_STREAM_NAME
-	out_stream.release();
-#endif
+		// process, display and record the video
+		three_diff_frame(&in_stream, delay, &out_stream);
+
+		// close I/O streams
+		in_stream.release();
+		out_stream.release();
+	}
+	// don't write video to file
+	else {
+		// process and display the video
+		three_diff_frame(&in_stream, delay);
+
+		// close the streams
+		in_stream.release();
+	}
 
 	return 0;
 }

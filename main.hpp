@@ -5,9 +5,14 @@
 #include <fstream>
 #include <string>
 #include <cmath>
+#include <cstdlib>
+#include <unistd.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+// Help info to use this program
+void print_usage();
 
 // Processing algorithm
 int three_diff_frame(cv::VideoCapture *in_stream_ptr, int delay_ms,
