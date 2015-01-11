@@ -25,7 +25,8 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 
 	imshow("camera", frame_disp);
 	if (out_stream_ptr) {
-		(*out_stream_ptr).write(frame_disp);
+		cout << "Saving video to file..." << endl;
+		out_stream_ptr->write(frame_disp);
 	}
 
 	bool stop = false;
@@ -58,7 +59,7 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 
 		imshow("camera", frame_disp);
 		if (out_stream_ptr) {
-			(*out_stream_ptr).write(frame_disp);
+			out_stream_ptr->write(frame_disp);
 		}
 
 		// delay for next frame
