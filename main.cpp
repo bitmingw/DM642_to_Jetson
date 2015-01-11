@@ -102,6 +102,7 @@ int main(int argc, char **argv)
 
 		// process, display and record the video
 		three_diff_frame(&in_stream, delay, &out_stream);
+		//display_video(&in_stream, delay, &out_stream);
 
 		// close I/O streams
 		in_stream.release();
@@ -111,6 +112,7 @@ int main(int argc, char **argv)
 	else {
 		// process and display the video
 		three_diff_frame(&in_stream, delay);
+		//display_video(&in_stream, delay);
 
 		// close the streams
 		in_stream.release();

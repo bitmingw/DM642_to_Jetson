@@ -14,6 +14,10 @@
 // Help info to use this program
 void print_usage();
 
+// Display input video
+int display_video(cv::VideoCapture *in_stream_ptr, int delay_ms,
+	cv::VideoWriter *out_stream_ptr = NULL);
+
 // Processing algorithm
 int three_diff_frame(cv::VideoCapture *in_stream_ptr, int delay_ms,
 	cv::VideoWriter *out_stream_ptr = NULL);
