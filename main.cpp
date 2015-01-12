@@ -17,9 +17,11 @@ int main(int argc, char **argv)
 	double frame_rate = 25.0;
 	bool show_help = false;
 	bool display_only = false;
+	// TODO: Implement performace test system
+	bool performance_test = false;
 
 	int op;
-	while ((op = getopt(argc, argv, "i:p:o:f:hd")) != -1) {
+	while ((op = getopt(argc, argv, "i:p:o:f:hdt")) != -1) {
 		switch (op) {
 			case 'i':
 				in_stream_name = optarg;
@@ -38,6 +40,9 @@ int main(int argc, char **argv)
 				break;
 			case 'd':
 				display_only = true;
+				break;
+			case 't':
+				performance_test = true;
 				break;
 			default:
 				cerr << "Wrong arguments!" << endl;
