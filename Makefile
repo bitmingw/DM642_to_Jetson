@@ -1,5 +1,11 @@
+# Copyright 2015 bitmingw
+
 default:
 	nvcc process.cpp display.cpp help.cpp main.cpp -o run.elf -L /usr/lib -l opencv_core -l opencv_imgproc -l opencv_highgui -l opencv_tegra --cudart=shared -O2 -arch=sm_50
+
+# 'normal' means using g++ so it is portable
+normal:
+	g++ process.cpp display.cpp help.cpp main.cpp -o run.elf -L /usr/lib -l opencv_core -l opencv_imgproc -l opencv_highgui -Wall -O2
 
 clean:
 	rm *.elf
