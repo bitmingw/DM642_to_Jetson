@@ -15,9 +15,11 @@ int main(int argc, char **argv)
 	char *out_stream_name = NULL;
 	char *frame_rate_str = NULL;
 	double frame_rate = 25.0;
+	bool show_help = false;
+	bool display_only = false;
 
 	int op;
-	while ((op = getopt(argc, argv, "i:p:o:f:")) != -1) {
+	while ((op = getopt(argc, argv, "i:p:o:f:hd")) != -1) {
 		switch (op) {
 			case 'i':
 				in_stream_name = optarg;
@@ -30,6 +32,12 @@ int main(int argc, char **argv)
 				break;
 			case 'f':
 				frame_rate_str = optarg;
+				break;
+			case 'h':
+				show_help = true;
+				break;
+			case 'd':
+				display_only = true;
 				break;
 			default:
 				cerr << "Wrong arguments!" << endl;
@@ -44,6 +52,12 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	// show help info if -h is given
+	if (show_help) {
+		print_usage();
+		return 0;
+	}
+
 	// open a default video stream for reading
 	cv::VideoCapture in_stream(0);
 
@@ -53,7 +67,7 @@ int main(int argc, char **argv)
 		in_stream = VideoCapture(in_stream_port);
 		// if can't open port and no -i is given, terminate with error
 		if (!in_stream.isOpened()) {
-			in_stream_port_str = NULL;
+			in_stream_port_str = NULL; // port is invalid
 			if (!in_stream_name) {
 				cerr << "Fatal error: can\'t read from video port " \
 				<< in_stream_port << '.' << endl;
@@ -100,9 +114,15 @@ int main(int argc, char **argv)
 			return 1;
 		}
 
+		// if -d is given, only display the video
+		if (display_only) {
+			display_video(&in_stream, delay, &out_stream);
+		}
 		// process, display and record the video
-		three_diff_frame(&in_stream, delay, &out_stream);
-		//display_video(&in_stream, delay, &out_stream);
+		else {
+			three_diff_frame(&in_stream, delay, &out_stream);
+		}
+
 
 		// close I/O streams
 		in_stream.release();
@@ -110,9 +130,14 @@ int main(int argc, char **argv)
 	}
 	// don't write video to file
 	else {
-		// process and display the video
-		three_diff_frame(&in_stream, delay);
-		//display_video(&in_stream, delay);
+		/// if -d is given, only display the video
+		if (display_only) {
+			display_video(&in_stream, delay);
+		}
+		// process, display and record the video
+		else {
+			three_diff_frame(&in_stream, delay);
+		}
 
 		// close the streams
 		in_stream.release();
