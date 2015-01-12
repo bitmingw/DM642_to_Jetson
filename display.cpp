@@ -17,12 +17,14 @@ int display_video(VideoCapture *in_stream_ptr, int delay_ms,
 
 	bool stop = false;
 	while (!stop) {
-		in_stream_ptr->read(disp);
+		if (!in_stream_ptr->read(disp)) {
+			break;
+		}
 		imshow("camera", disp);
+
 		if (waitKey(delay_ms) >= 0) {
 			stop = true;
 		}	
 	}	
-	
 	return 0;
 }
