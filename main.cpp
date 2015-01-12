@@ -17,7 +17,6 @@ int main(int argc, char **argv)
 	double frame_rate = 25.0;
 	bool show_help = false;
 	bool display_only = false;
-	// TODO: Implement performace test system
 	bool performance_test = false;
 
 	int op;
@@ -102,11 +101,15 @@ int main(int argc, char **argv)
 	if (frame_rate_str) {
 		frame_rate = atof(frame_rate_str);
 	}
-	cout << "FPS: " << frame_rate << endl;
+	cout << "Source video FPS: " << frame_rate << endl;
 
 	// delay between each frame in ms
 	int delay = 1000 / frame_rate;
 
+	// set timer for performance test
+	double start_time = 0, stop_time = 0, real_time_difference = 0;
+	int num_frames;
+	double tick_frequency = static_cast<double>(getTickFrequency());
 
 	// try to write video file if -o is set
 	if (out_stream_name) {
@@ -119,34 +122,55 @@ int main(int argc, char **argv)
 			return 1;
 		}
 
-		// if -d is given, only display the video
-		if (display_only) {
-			display_video(&in_stream, delay, &out_stream);
-		}
-		// process, display and record the video
-		else {
-			three_diff_frame(&in_stream, delay, &out_stream);
+		if (performance_test) {
+			start_time = static_cast<double>(getTickCount());		
 		}
 
+		if (display_only) {
+			num_frames = display_video(&in_stream, delay, &out_stream);
+		}
+		else {
+			num_frames = three_diff_frame(&in_stream, delay, &out_stream);
+		}
+
+		if (performance_test) {
+			stop_time = static_cast<double>(getTickCount());
+		}
 
 		// close I/O streams
 		in_stream.release();
 		out_stream.release();
 	}
+
 	// don't write video to file
 	else {
-		/// if -d is given, only display the video
-		if (display_only) {
-			display_video(&in_stream, delay);
-		}
-		// process, display and record the video
-		else {
-			three_diff_frame(&in_stream, delay);
+		if (performance_test) {
+			start_time = static_cast<double>(getTickCount());		
 		}
 
-		// close the streams
+		if (display_only) {
+			num_frames = display_video(&in_stream, delay);
+		}
+		else {
+			num_frames = three_diff_frame(&in_stream, delay);
+		}
+
+		if (performance_test) {
+			stop_time = static_cast<double>(getTickCount());
+		}
+
+		// close input stream
 		in_stream.release();
+	}
+	
+	// report actual FPS
+	real_time_difference = (stop_time - start_time) / tick_frequency;
+	cout << "Time to process: " << real_time_difference << " s" << endl;
+	if (num_frames > 0) {
+		cout << "Number of frames: " << num_frames << endl;
+		cout << "Actual FPS: " << num_frames / real_time_difference << endl;
 	}
 
 	return 0;
 }
+
