@@ -13,6 +13,7 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 	Mat frame1, frame2, frame3;	// frames to store original images
 	Mat diff_frame1, diff_frame2;	// frames of difference
 	namedWindow("camera");
+	int num_frames = 0;
 
 	int cur_frame_position = 3;	// The position of last frame
 	int frame_read_status = true;	// if next frame exists
@@ -28,6 +29,7 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 		cout << "Saving video to file..." << endl;
 		out_stream_ptr->write(frame_disp);
 	}
+	num_frames += 3;
 
 	bool stop = false;
 	while (!stop) {
@@ -61,6 +63,7 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 		if (out_stream_ptr) {
 			out_stream_ptr->write(frame_disp);
 		}
+		num_frames++;
 
 		// delay for next frame
 		// and press any key to stop
@@ -68,7 +71,7 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 			stop = true;
 		}
 	}
-	return 0;
+	return num_frames;
 }
 
 int get_next_frame_position(int current_position) {

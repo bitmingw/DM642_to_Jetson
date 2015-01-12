@@ -15,10 +15,12 @@
 void print_usage();
 
 // Display input video
+// return -1 when error happens, otherwise return the number of frames
 int display_video(cv::VideoCapture *in_stream_ptr, int delay_ms,
 	cv::VideoWriter *out_stream_ptr = NULL);
 
 // Processing algorithm
+// return -1 when error happens, otherwise return the number of frames
 int three_diff_frame(cv::VideoCapture *in_stream_ptr, int delay_ms,
 	cv::VideoWriter *out_stream_ptr = NULL);
 
@@ -38,3 +40,4 @@ cv::Mat *frame1, cv::Mat *frame2, cv::Mat *frame3);
 
 // Helper: combine 2 difference frames to the result
 int combine_diff_frames(cv::Mat *result, cv::Mat *diff1, cv::Mat *diff2);
+
