@@ -3,6 +3,9 @@
 
 #include "main.hpp"
 
+#define USING_GPU
+#undef USING_GPU
+
 using namespace cv;
 using namespace std;
 
@@ -20,9 +23,15 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 
 	// on the first run, read 3 frames and calculate differences
 	read_3_gray_frames(in_stream_ptr, &frame1, &frame2, &frame3);
+#ifdef USING_GPU
+	gpu_gen_2_gray_diff_frames(cur_frame_position, &diff_frame1, &diff_frame2, 
+		&frame1, &frame2, &frame3);
+	gpu_combine_diff_frames(&frame_disp, &diff_frame1, &diff_frame2);
+#else
 	gen_2_gray_diff_frames(cur_frame_position, &diff_frame1, &diff_frame2, 
 		&frame1, &frame2, &frame3);
 	combine_diff_frames(&frame_disp, &diff_frame1, &diff_frame2);
+#endif
 
 	imshow("camera", frame_disp);
 	if (out_stream_ptr) {
@@ -55,9 +64,16 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 		}
 
 		// calculate differences
+#ifdef USING_GPU
+		gpu_gen_2_gray_diff_frames(cur_frame_position,
+			&diff_frame1, &diff_frame2, 
+			&frame1, &frame2, &frame3);
+		gpu_combine_diff_frames(&frame_disp, &diff_frame1, &diff_frame2);
+#else
 		gen_2_gray_diff_frames(cur_frame_position, &diff_frame1, &diff_frame2, 
 			&frame1, &frame2, &frame3);
 		combine_diff_frames(&frame_disp, &diff_frame1, &diff_frame2);
+#endif
 
 		imshow("camera", frame_disp);
 		if (out_stream_ptr) {
@@ -91,7 +107,8 @@ int read_1_gray_frame(VideoCapture *in_stream_ptr, Mat *frame) {
 }
 
 int read_3_gray_frames(VideoCapture *in_stream_ptr, 
-Mat *frame1, Mat *frame2, Mat *frame3) {
+	Mat *frame1, Mat *frame2, Mat *frame3)
+{
 	in_stream_ptr->read(*frame1);
 	in_stream_ptr->read(*frame2);
 	in_stream_ptr->read(*frame3);
@@ -102,7 +119,8 @@ Mat *frame1, Mat *frame2, Mat *frame3) {
 }
 
 int gen_2_gray_diff_frames(int start_position, Mat *diff1, Mat *diff2, 
-Mat *frame1, Mat *frame2, Mat *frame3) {
+	Mat *frame1, Mat *frame2, Mat *frame3)
+{
 	switch (start_position) {
 		case 3:
 			(*diff1) = (*frame2) - (*frame1);
@@ -120,8 +138,65 @@ Mat *frame1, Mat *frame2, Mat *frame3) {
 	return 0;
 }
 
+#ifdef USING_GPU
+int gpu_gen_2_gray_diff_frames(int start_position, Mat *diff1, Mat *diff2, 
+	Mat *frame1, Mat *frame2, Mat *frame3)
+{
+	gpu::GpuMat gpu_frame1, gpu_frame2, gpu_frame3, gpu_diff1, gpu_diff2;
+	
+	switch (start_position) {
+		case 3:
+			gpu_frame2.upload(*frame2);
+			gpu_frame1.upload(*frame1);
+			gpu::subtract(gpu_frame2, gpu_frame1, gpu_diff1);
+			gpu_diff1.download(*diff1);
+			
+			gpu_frame3.upload(*frame3);
+			gpu::subtract(gpu_frame3, gpu_frame2, gpu_diff2);
+			gpu_diff1.download(*diff2);
+			
+			break;
+		case 1:
+			gpu_frame3.upload(*frame3);
+			gpu_frame2.upload(*frame2);
+			gpu::subtract(gpu_frame3, gpu_frame2, gpu_diff1);
+			gpu_diff1.download(*diff1);
+			
+			gpu_frame1.upload(*frame1);
+			gpu::subtract(gpu_frame1, gpu_frame3, gpu_diff2);
+			gpu_diff1.download(*diff2);
+			
+			break;
+		case 2:
+			gpu_frame1.upload(*frame1);
+			gpu_frame3.upload(*frame3);
+			gpu::subtract(gpu_frame1, gpu_frame3, gpu_diff1);
+			gpu_diff1.download(*diff1);
+			
+			gpu_frame2.upload(*frame2);
+			gpu::subtract(gpu_frame2, gpu_frame1, gpu_diff2);
+			gpu_diff1.download(*diff2);
+			
+			break;
+	}
+
+	return 0;
+}
+#endif
+
 int combine_diff_frames(Mat *result, Mat *diff1, Mat *diff2) {
 	(*result) = (*diff2) + (*diff1);
 	return 0;
 }
+
+#ifdef USING_GPU
+int gpu_combine_diff_frames(Mat *result, Mat *diff1, Mat *diff2) {
+	gpu::GpuMat gpu_result, gpu_diff1, gpu_diff2;
+	gpu_diff1.upload(*diff1);
+	gpu_diff2.upload(*diff2);
+	gpu::add(gpu_diff1, gpu_diff2, gpu_result);
+	gpu_result.download(*result);
+	return 0;
+}
+#endif
 
