@@ -163,12 +163,14 @@ int main(int argc, char **argv)
 		in_stream.release();
 	}
 	
-	// report actual FPS
-	real_time_difference = (stop_time - start_time) / tick_frequency;
-	cout << "Time to process: " << real_time_difference << " s" << endl;
-	if (num_frames > 0) {
-		cout << "Number of frames: " << num_frames << endl;
-		cout << "Actual FPS: " << num_frames / real_time_difference << endl;
+	// report actual FPS if enable performance test
+	if (performance_test) {
+		real_time_difference = (stop_time - start_time) / tick_frequency;
+		cout << "Time to process: " << real_time_difference << " s" << endl;
+		if (num_frames > 0) {
+			cout << "Number of frames: " << num_frames << endl;
+			cout << "Actual FPS: " << num_frames / real_time_difference << endl;
+		}
 	}
 
 	return 0;
