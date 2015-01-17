@@ -4,25 +4,33 @@
 default:
 	cd src; \
 	nvcc process.cpp display.cpp help.cpp main.cpp -o ../run.elf \
--D USING_GPU -L /usr/lib -l opencv_core -l opencv_imgproc -l opencv_highgui -l opencv_gpu -l opencv_tegra --cudart=shared -O2 -arch=sm_50
+	-D USING_GPU -L /usr/lib \
+	-l opencv_core -l opencv_imgproc \
+	-l opencv_highgui -l opencv_gpu -l opencv_tegra \
+	--cudart=shared -O2 -arch=sm_50
 
 # 'normal' means using g++ so it is portable
 normal:
 	cd src; \
-	g++ process.cpp display.cpp help.cpp main.cpp -o ../run.elf -L /usr/lib -l opencv_core -l opencv_imgproc -l opencv_highgui -Wall -O2
+	g++ process.cpp display.cpp help.cpp main.cpp \
+	-o ../run.elf -L /usr/lib -l opencv_core \
+	-l opencv_imgproc -l opencv_highgui -Wall -O2
 
 clean:
 	rm *.elf
 
+# test the UART communication module
 serial_test:
-	cd src; \
-	g++ rs232.c serial_test.cpp -o ../serial_test.elf -Wall -O2
+	g++ src/rs232.c test/serial_test.cpp \
+	-o serial_test.elf -Wall -O2
 
+# test the PTZ motion controlled by UART module
 motion_test:
-	cd src; \
-	g++ rs232.c motion.cpp motion_test.cpp -o ../motion_test.elf -Wall -O2
+	g++ src/rs232.c src/motion.cpp test/motion_test.cpp \
+	-o motion_test.elf -Wall -O2
 
+# test the video capture by HTTP
 webcam_test:
-	cd src; \
-	g++ webcam_test.cpp -o ../webcam_test.elf -L /usr/lib -l opencv_core -l opencv_highgui -Wall -O2
+	g++ test/webcam_test.cpp -o webcam_test.elf \
+	-L /usr/lib -l opencv_core -l opencv_highgui -Wall -O2
 
