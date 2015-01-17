@@ -3,9 +3,6 @@
 
 #include "../include/main.hpp"
 
-#define USING_GPU
-#undef USING_GPU
-
 using namespace cv;
 using namespace std;
 
@@ -24,6 +21,7 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 	// on the first run, read 3 frames and calculate differences
 	read_3_gray_frames(in_stream_ptr, &frame1, &frame2, &frame3);
 #ifdef USING_GPU
+	cout << "Processing via GPU..." << endl;
 	gpu_gen_2_gray_diff_frames(cur_frame_position, &diff_frame1, &diff_frame2, 
 		&frame1, &frame2, &frame3);
 	gpu_combine_diff_frames(&frame_disp, &diff_frame1, &diff_frame2);
