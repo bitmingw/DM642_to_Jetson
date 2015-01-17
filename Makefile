@@ -19,3 +19,8 @@ serial_test:
 motion_test:
 	cd src; \
 	g++ rs232.c motion.cpp motion_test.cpp -o ../motion_test.elf -Wall -O2
+
+webcam_test:
+	cd src; \
+	g++ webcam_test.cpp -o ../webcam_test.elf -L /usr/lib -l opencv_core -l opencv_highgui -Wall -O2
+
