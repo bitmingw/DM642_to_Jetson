@@ -1,7 +1,7 @@
 // Copyright 2015 bitmingw
 // Read video stream and display in a window
 
-#include "main.hpp"
+#include "../include/main.hpp"
 
 using namespace cv;
 using namespace std;

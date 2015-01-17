@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "rs232.h"
+#include "../include/rs232.h"
 
 int main()
 {

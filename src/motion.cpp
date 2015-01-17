@@ -1,7 +1,7 @@
 // Copyright 2015 bitmingw
 // Control the motion of PTZ via RS232->RS485 signal
 
-#include "motion.hpp"
+#include "../include/motion.hpp"
 
 using namespace std;
 

@@ -1,7 +1,7 @@
 // Copyright 2015 bitmingw
 // Help info of this program
 
-#include "main.hpp"
+#include "../include/main.hpp"
 
 using namespace std;
 

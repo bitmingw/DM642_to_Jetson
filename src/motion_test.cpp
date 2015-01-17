@@ -1,7 +1,7 @@
 // Copyright 2015 bitmingw
 // Test the motion of PTZ
 
-#include "motion.hpp"
+#include "../include/motion.hpp"
 
 using namespace std;
 

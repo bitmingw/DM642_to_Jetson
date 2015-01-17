@@ -1,7 +1,7 @@
 // Copyright 2015 bitmingw
 // Process and display the video stream via three-difference-frame method
 
-#include "main.hpp"
+#include "../include/main.hpp"
 
 #define USING_GPU
 #undef USING_GPU
