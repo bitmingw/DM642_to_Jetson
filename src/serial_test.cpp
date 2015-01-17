@@ -1,8 +1,8 @@
 // Copyright 2015 bitmingw
 // Test program of RS232 output in C interface
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 
 #include "../include/rs232.h"

@@ -14,7 +14,7 @@ clean:
 
 serial_test:
 	cd src; \
-	gcc rs232.c serial_test.c -o ../serial_test.elf -Wall -O2
+	g++ rs232.c serial_test.cpp -o ../serial_test.elf -Wall -O2
 
 motion_test:
 	cd src; \
