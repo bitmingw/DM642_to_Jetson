@@ -6,13 +6,15 @@
 using namespace std;
 
 void print_usage() {
-	cout << "Usage:" << endl;
-	cout << "$ program_name [-h][-i read_file_name][-p video_port_number]" \
-	<< "[-o write_file_name][-f fps][-d][-t]" << endl;
+	cout << endl << "Usage:" << endl;
+	cout << "$ program_name [-h][-w][-p video_port_number]" << endl;
+	cout << "[-i read_file_name][-o write_file_name][-f fps][-d][-t]" << endl;
 	cout << "To show this help info, use -h." << endl;
-	cout << "To specify a source of video, " \
-	<< "either -i or -p should be given, " \
-	<< "and -p is tried prior to -i." << endl;
-	cout << "To display the video without processing, use -d." << endl;
-	cout << "To enable performance test, use -t." << endl;
+	cout << "To specify a source of video: " << endl;
+	cout << "Use -w to read video sequence from localhost webcam." << endl;
+	cout << "Use -p + port number to read video from /dev/video*." << endl;
+	cout << "Use -i + file name to read video from *.avi file." << endl;
+	cout << "Use -o + file name to save the results to file." << endl;
+	cout << "Use -d to display the video without processing." << endl;
+	cout << "Use -t to enable performance test." << endl << endl;
 }

@@ -18,9 +18,10 @@ int main(int argc, char **argv)
 	bool show_help = false;
 	bool display_only = false;
 	bool performance_test = false;
+	bool use_webcam = false;
 
 	int op;
-	while ((op = getopt(argc, argv, "i:p:o:f:hdt")) != -1) {
+	while ((op = getopt(argc, argv, "i:p:o:f:hdtw")) != -1) {
 		switch (op) {
 			case 'i':
 				in_stream_name = optarg;
@@ -42,6 +43,9 @@ int main(int argc, char **argv)
 				break;
 			case 't':
 				performance_test = true;
+				break;
+			case 'w':
+				use_webcam = true;
 				break;
 			default:
 				cerr << "Wrong arguments!" << endl;
@@ -65,25 +69,30 @@ int main(int argc, char **argv)
 	// open a default video stream for reading
 	cv::VideoCapture in_stream(0);
 
+	// try to open video on web if -w is set
+	if (use_webcam) {
+		string url = "http://localhost:8080/?action=stream?dummy=.mjpg";
+		in_stream = VideoCapture(url);
+		if (!in_stream.isOpened()) {
+			cerr << "Fatal error: can\'t read from HTTP " << url << endl;
+			return 1;
+		}
+	}
+
 	// try to open video port if -p is set
 	if (in_stream_port_str) {
 		in_stream_port = atoi(in_stream_port_str);
 		in_stream = VideoCapture(in_stream_port);
-		// if can't open port and no -i is given, terminate with error
 		if (!in_stream.isOpened()) {
-			in_stream_port_str = NULL; // port is invalid
-			if (!in_stream_name) {
-				cerr << "Fatal error: can\'t read from video port " \
-				<< in_stream_port << '.' << endl;
-				return 1;
-			}
+			cerr << "Fatal error: can\'t read from video port " \
+			<< in_stream_port << '.' << endl;
+			return 1;
 		}
 	} 
 	
 	// try to read video file if -i is set
-	if (in_stream_name && !in_stream_port_str) {
+	if (in_stream_name) {
 		in_stream = VideoCapture(in_stream_name);
-		// if can't open video file, terminate with error
 		if (!in_stream.isOpened()) {
 			cerr << "Fatal error: can\'t read from video file " \
 			<< in_stream_name << '.' << endl;
