@@ -145,7 +145,7 @@ Return Value:
 ******************************************************************************/
 int main(int argc, char *argv[])
 {
-  char *input  = "input_uvc.so --resolution 640x480 --fps 5 --device /dev/video0";
+  char *input  = "input_uvc.so --resolution 352x288 --fps 20 --device /dev/video0";
   char *output[MAX_OUTPUT_PLUGINS];
   int daemon=0, i;
   size_t tmp=0;
