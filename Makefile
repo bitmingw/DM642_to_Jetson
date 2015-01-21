@@ -3,8 +3,8 @@
 # set -D USING_GPU to accelerate image processing
 default:
 	cd src; \
-	nvcc process.cpp display.cpp help.cpp main.cpp -o ../run.elf \
-	-D USING_GPU -L /usr/lib \
+	nvcc hist.cpp process.cpp display.cpp help.cpp main.cpp \
+	-o ../run.elf -D USING_GPU -L /usr/lib \
 	-l opencv_core -l opencv_imgproc \
 	-l opencv_highgui -l opencv_video \
 	-l opencv_gpu -l opencv_tegra \
@@ -13,7 +13,7 @@ default:
 # 'normal' means using g++ so it is portable
 normal:
 	cd src; \
-	g++ process.cpp display.cpp help.cpp main.cpp \
+	g++ hist.cpp process.cpp display.cpp help.cpp main.cpp \
 	-o ../run.elf -L /usr/lib -l opencv_core \
 	-l opencv_imgproc -l opencv_highgui -l opencv_video \
 	-Wall -O2

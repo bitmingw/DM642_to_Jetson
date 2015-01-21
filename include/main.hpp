@@ -6,6 +6,7 @@
 #include <string>
 #include <cmath>
 #include <cstdlib>
+#include <assert.h>
 #include <unistd.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -51,4 +52,13 @@ int combine_diff_frames(cv::Mat *result, cv::Mat *diff1, cv::Mat *diff2);
 
 // Helper: combine 2 difference frames to the result via GPU
 int gpu_combine_diff_frames(cv::Mat *result, cv::Mat *diff1, cv::Mat *diff2);
+
+
+// Helper: calculate the light distribution on x and y axis
+void two_histogram(cv::Mat *frame, cv::Mat *x_axis, cv::Mat *y_axis);
+
+// Helper: calculate the center and range of moving object
+// return: Mat_<float>(center_x, center_y, range_x, range_y)
+cv::Mat hist_analysis(cv::Mat *x_axis, cv::Mat *y_axis, float threshold_ratio,
+	float boundary_ratio);
 
