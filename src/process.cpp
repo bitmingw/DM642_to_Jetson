@@ -9,7 +9,7 @@ using namespace std;
 int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 	VideoWriter *out_stream_ptr, bool tracking) 
 {
-	Mat frame_disp; 
+	Mat frame_disp; // should be CV_8UC1
 	Mat frame1, frame2, frame3;	// frames to store original images
 	Mat diff_frame1, diff_frame2;	// frames of difference
 	namedWindow("camera");
@@ -31,6 +31,36 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 	combine_diff_frames(&frame_disp, &diff_frame1, &diff_frame2);
 #endif
 
+	// median filter
+	medianBlur(frame_disp, frame_disp, 5);
+	// binaryzation
+	threshold(frame_disp, frame_disp, 20, 255, THRESH_BINARY);
+	// setup two-sided histogram
+	vector<int> x_axis(frame_disp.cols);
+	vector<int> y_axis(frame_disp.rows);
+	two_histogram(&frame_disp, &x_axis, &y_axis);
+	Mat_<float> obj_pos_range = hist_analysis(&x_axis, &y_axis, 0.05, 0.25);
+	// setup matrix used in Kalman filter
+	Mat_<float> measurement(2,1);
+	Mat_<float> control(2,1);
+	Mat_<float> estimated(4,1);
+	measurement.setTo(Scalar(0));
+	control.setTo(Scalar(0));
+
+	// initialize kalman filter
+	KalmanFilter kf(4, 2, 2); // 4 order, 2 measure, 2 control
+	kf.transitionMatrix = *(Mat_<float>(4, 4) << \
+		1,0,1,0, 0,1,0,1, 0,0,1,0, 0,0,0,1);
+	kf.statePre.at<float>(0) = obj_pos_range(0);
+	kf.statePre.at<float>(1) = obj_pos_range(1);
+	kf.statePre.at<float>(2) = 0; 
+	kf.statePre.at<float>(0) = 0;
+	setIdentity(kf.measurementMatrix); // set to I
+	setIdentity(kf.processNoiseCov, Scalar::all(1e-4));
+	setIdentity(kf.measurementNoiseCov, Scalar::all(10));
+	setIdentity(kf.errorCovPost, Scalar::all(0.1));
+	
+	// display the first frame
 	imshow("camera", frame_disp);
 	if (out_stream_ptr) {
 		cout << "Saving video to file..." << endl;
@@ -38,6 +68,8 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 	}
 	num_frames += 3;
 
+
+	// setup the loop
 	bool stop = false;
 	while (!stop) {
 
@@ -73,6 +105,22 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 		combine_diff_frames(&frame_disp, &diff_frame1, &diff_frame2);
 #endif
 
+		// median filter
+		medianBlur(frame_disp, frame_disp, 5);
+		// binaryzation
+		// two-sided histogram
+		threshold(frame_disp, frame_disp, 20, 255, THRESH_BINARY);
+		two_histogram(&frame_disp, &x_axis, &y_axis);
+		obj_pos_range = hist_analysis(&x_axis, &y_axis, 0.05, 0.25);
+
+		// predict & update
+		kf.predict(control);
+		measurement(0) = obj_pos_range(0);
+		measurement(1) = obj_pos_range(1);	
+		estimated = kf.correct(measurement);
+		cout << estimated(0) << " " << estimated(1) << endl;
+
+		// display video
 		imshow("camera", frame_disp);
 		if (out_stream_ptr) {
 			out_stream_ptr->write(frame_disp);
