@@ -32,7 +32,7 @@ void two_histogram(Mat *frame, vector<int> *x_axis, vector<int> *y_axis) {
 	}
 }
 
-Mat hist_analysis(vector<int> *x_axis, vector<int> *y_axis,
+Mat_<float> hist_analysis(vector<int> *x_axis, vector<int> *y_axis,
 	float threshold_ratio, float boundary_ratio)
 {
 	assert(threshold_ratio > 0 && threshold_ratio < 1);
