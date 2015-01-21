@@ -61,7 +61,7 @@ Mat_<float> hist_analysis(vector<int> *x_axis, vector<int> *y_axis,
 	// check if moving object exists
 	if (peak_val_x < max_x*threshold_ratio || peak_val_y < max_y*threshold_ratio) {
 		// nothing is found
-		return Mat_<float>(1,4) << 0,0,0,0;
+		return Mat_<float>(4,1) << 0,0,0,0;
 	}
 	else {
 		int x1 = 0, x2 = max_x-1, y1 = 0, y2 = max_y-1;
@@ -92,7 +92,7 @@ Mat_<float> hist_analysis(vector<int> *x_axis, vector<int> *y_axis,
 				break;
 			}
 		}
-		return Mat_<float>(1,4) << (x1+x2)/2, (y1+y2)/2, (x2-x1)/2, (y2-y1)/2;
+		return Mat_<float>(4,1) << (x1+x2)/2, (y1+y2)/2, (x2-x1)/2, (y2-y1)/2;
 	}
 }
 
