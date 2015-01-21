@@ -7,7 +7,7 @@ using namespace cv;
 using namespace std;
 
 int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
-	VideoWriter *out_stream_ptr) 
+	VideoWriter *out_stream_ptr, bool tracking) 
 {
 	Mat frame_disp; 
 	Mat frame1, frame2, frame3;	// frames to store original images

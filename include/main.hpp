@@ -10,6 +10,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/video/tracking.hpp>
 #include <opencv2/gpu/gpu.hpp>
 
 // Help info to use this program
@@ -20,10 +21,11 @@ void print_usage();
 int display_video(cv::VideoCapture *in_stream_ptr, int delay_ms,
 	cv::VideoWriter *out_stream_ptr = NULL);
 
+
 // Processing algorithm
 // return -1 when error happens, otherwise return the number of frames
 int three_diff_frame(cv::VideoCapture *in_stream_ptr, int delay_ms,
-	cv::VideoWriter *out_stream_ptr = NULL);
+	cv::VideoWriter *out_stream_ptr = NULL, bool tracking = false);
 
 // Helper: determine the buffer to store the next frame
 int get_next_frame_position(int current_position);
@@ -43,7 +45,6 @@ int gen_2_gray_diff_frames(int start_position, cv::Mat *diff1, cv::Mat *diff2,
 int gpu_gen_2_gray_diff_frames(int start_position,
 	cv::Mat *diff1, cv::Mat *diff2, 
 	cv::Mat *frame1, cv::Mat *frame2, cv::Mat *frame3);
-
 
 // Helper: combine 2 difference frames to the result
 int combine_diff_frames(cv::Mat *result, cv::Mat *diff1, cv::Mat *diff2);

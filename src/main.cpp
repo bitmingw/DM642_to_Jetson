@@ -16,12 +16,13 @@ int main(int argc, char **argv)
 	char *frame_rate_str = NULL;
 	double frame_rate = 25.0;
 	bool show_help = false;
+	bool kalman_tracking = false;
 	bool display_only = false;
 	bool performance_test = false;
 	bool use_webcam = false;
 
 	int op;
-	while ((op = getopt(argc, argv, "i:p:o:f:hdtw")) != -1) {
+	while ((op = getopt(argc, argv, "i:p:o:f:hkdtw")) != -1) {
 		switch (op) {
 			case 'i':
 				in_stream_name = optarg;
@@ -37,6 +38,9 @@ int main(int argc, char **argv)
 				break;
 			case 'h':
 				show_help = true;
+				break;
+			case 'k':
+				kalman_tracking = true;
 				break;
 			case 'd':
 				display_only = true;
@@ -139,7 +143,8 @@ int main(int argc, char **argv)
 			num_frames = display_video(&in_stream, delay, &out_stream);
 		}
 		else {
-			num_frames = three_diff_frame(&in_stream, delay, &out_stream);
+			num_frames = three_diff_frame(&in_stream, delay,
+				&out_stream, kalman_tracking);
 		}
 
 		if (performance_test) {
@@ -161,7 +166,8 @@ int main(int argc, char **argv)
 			num_frames = display_video(&in_stream, delay);
 		}
 		else {
-			num_frames = three_diff_frame(&in_stream, delay);
+			num_frames = three_diff_frame(&in_stream, delay,
+				NULL, kalman_tracking);
 		}
 
 		if (performance_test) {

@@ -6,7 +6,8 @@ default:
 	nvcc process.cpp display.cpp help.cpp main.cpp -o ../run.elf \
 	-D USING_GPU -L /usr/lib \
 	-l opencv_core -l opencv_imgproc \
-	-l opencv_highgui -l opencv_gpu -l opencv_tegra \
+	-l opencv_highgui -l opencv_video \
+	-l opencv_gpu -l opencv_tegra \
 	--cudart=shared -O2 -arch=sm_50
 
 # 'normal' means using g++ so it is portable
@@ -14,7 +15,8 @@ normal:
 	cd src; \
 	g++ process.cpp display.cpp help.cpp main.cpp \
 	-o ../run.elf -L /usr/lib -l opencv_core \
-	-l opencv_imgproc -l opencv_highgui -Wall -O2
+	-l opencv_imgproc -l opencv_highgui -l opencv_video \
+	-Wall -O2
 
 clean:
 	rm *.elf
