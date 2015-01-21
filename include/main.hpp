@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <cmath>
 #include <cstdlib>
 #include <assert.h>
@@ -55,10 +56,11 @@ int gpu_combine_diff_frames(cv::Mat *result, cv::Mat *diff1, cv::Mat *diff2);
 
 
 // Helper: calculate the light distribution on x and y axis
-void two_histogram(cv::Mat *frame, cv::Mat *x_axis, cv::Mat *y_axis);
+void two_histogram(cv::Mat *frame, std::vector<int> *x_axis,
+	std::vector<int> *y_axis);
 
 // Helper: calculate the center and range of moving object
 // return: Mat_<float>(center_x, center_y, range_x, range_y)
-cv::Mat hist_analysis(cv::Mat *x_axis, cv::Mat *y_axis, float threshold_ratio,
-	float boundary_ratio);
+cv::Mat hist_analysis(std::vector<int> *x_axis, std::vector<int> *y_axis,
+	float threshold_ratio, float boundary_ratio);
 
