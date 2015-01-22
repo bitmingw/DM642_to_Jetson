@@ -61,5 +61,5 @@ void two_histogram(cv::Mat *frame, std::vector<int> *x_axis,
 // Helper: calculate the center and range of moving object
 // return: Mat_<float>(center_x, center_y, range_x, range_y)
 cv::Mat_<float> hist_analysis(std::vector<int> *x_axis, std::vector<int> *y_axis,
-	float threshold_ratio, float boundary_ratio);
+	float threshold_ratio);
 

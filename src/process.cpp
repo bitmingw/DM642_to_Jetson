@@ -32,14 +32,14 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 #endif
 
 	// median filter
-	medianBlur(frame_disp, frame_disp, 5);
+	medianBlur(frame_disp, frame_disp, 7);
 	// binaryzation
-	threshold(frame_disp, frame_disp, 20, 255, THRESH_BINARY);
+	threshold(frame_disp, frame_disp, 40, 255, THRESH_BINARY);
 	// setup two-sided histogram
 	vector<int> x_axis(frame_disp.cols);
 	vector<int> y_axis(frame_disp.rows);
 	two_histogram(&frame_disp, &x_axis, &y_axis);
-	Mat_<float> obj_pos_range = hist_analysis(&x_axis, &y_axis, 0.02, 0.1);
+	Mat_<float> obj_pos_range = hist_analysis(&x_axis, &y_axis, 0.02);
 	// setup matrix used in Kalman filter
 	Mat_<float> measurement(2,1);
 	Mat_<float> control(2,1);
@@ -106,20 +106,19 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 #endif
 
 		// median filter
-		medianBlur(frame_disp, frame_disp, 5);
+		medianBlur(frame_disp, frame_disp, 7);
 		// binaryzation
-		threshold(frame_disp, frame_disp, 20, 255, THRESH_BINARY);
+		threshold(frame_disp, frame_disp, 40, 255, THRESH_BINARY);
 
 		if (tracking) {
 			two_histogram(&frame_disp, &x_axis, &y_axis);
-			obj_pos_range = hist_analysis(&x_axis, &y_axis, 0.02, 0.1);
+			obj_pos_range = hist_analysis(&x_axis, &y_axis, 0.02);
 
 			// predict & update
 			kf.predict(control);
 			measurement(0) = obj_pos_range(0);
 			measurement(1) = obj_pos_range(1);	
 			estimated = kf.correct(measurement);
-			cout << estimated(0) << " " << estimated(1) << " ";
 			
 			// draw rectangle to show the object
 			Point pt1(estimated(0) - obj_pos_range(2)/2 - frame_disp.cols/100,
@@ -128,7 +127,6 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 				estimated(1) + obj_pos_range(3)/2 + frame_disp.rows/100);
 
 			rectangle(frame_disp, pt1, pt2, Scalar(255), 2);
-			cout << pt1.x << " " << pt1.y << " " << pt2.x << " " << pt2.y << endl;
 		}
 
 		// display video

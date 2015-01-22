@@ -33,65 +33,74 @@ void two_histogram(Mat *frame, vector<int> *x_axis, vector<int> *y_axis) {
 }
 
 Mat_<float> hist_analysis(vector<int> *x_axis, vector<int> *y_axis,
-	float threshold_ratio, float boundary_ratio)
+	float threshold_ratio)
 {
 	assert(threshold_ratio > 0 && threshold_ratio < 1);
-	assert(boundary_ratio> 0 && boundary_ratio< 1);
 
-	// find peak at x and y axis
-	int peak_val_x = 0, peak_val_y = 0;
-	int peak_pos_x = 0, peak_pos_y = 0;
 	int max_x = x_axis->size();
 	int max_y = y_axis->size();
 
-	for (int i = 0; i < max_x; i++) {
-		if (x_axis->at(i) > peak_val_x) {
-			peak_val_x = x_axis->at(i);
-			peak_pos_x = i;
-		}
-	}
-
-	for (int i = 0; i < max_y; i++) {
-		if (y_axis->at(i) > peak_val_y) {
-			peak_val_y = y_axis->at(i);
-			peak_pos_y = i;
-		}
-	}
+    // find all the positions that satisfy threshold ratio
+    int threshold_x = static_cast<int>(max_x * threshold_ratio);
+    int threshold_y = static_cast<int>(max_y * threshold_ratio);
+    vector<int> x_coord(0);
+    vector<int> y_coord(0);
+    for (int i = 0; i < max_x; i++) {
+        if (x_axis->at(i) > threshold_x) {
+            x_coord.push_back(i);
+        }
+    }
+    for (int i = 0; i < max_y; i++) {
+        if (y_axis->at(i) > threshold_y) {
+            y_coord.push_back(i);
+        }
+    }
 
 	// check if moving object exists
-	if (peak_val_x < max_x*threshold_ratio || peak_val_y < max_y*threshold_ratio) {
+	if (x_coord.size() == 0 || y_coord.size() == 0) {
 		// nothing is found
 		return Mat_<float>(4,1) << 0,0,0,0;
 	}
 	else {
 		int x1 = 0, x2 = max_x-1, y1 = 0, y2 = max_y-1;
-		int edge_val_x = static_cast<int>(peak_val_x * boundary_ratio);
-		int edge_val_y = static_cast<int>(peak_val_y * boundary_ratio);
+        int start_x = x_coord[0], len_x = 0, maxlen_x = 0;
+        int start_y = y_coord[0], len_y = 0, maxlen_y = 0;
 
-		for (int i = peak_pos_x; i >= 0; i--) {
-			if (x_axis->at(i) < edge_val_x) {
-				x1 = i;
-				break;
-			}
+		// search for the longest continuous segment
+		for (unsigned int i = 1; i < x_coord.size(); i++) {
+            // when continuous and not the end
+            if (x_coord[i] == x_coord[i-1] + 1 && i != x_coord.size() - 1) {
+                len_x++;
+            }
+            // when break
+            else {
+                if (len_x > maxlen_x) {
+                    maxlen_x = len_x; // record max length
+                    x1 = start_x; // record the position
+                }
+                len_x = 0; // clear counter
+                start_x = x_coord[i]; // try new segment
+            }
 		}
-		for (int i = peak_pos_x; i < max_x; i++) {
-			if (x_axis->at(i) < edge_val_x) {
-				x2 = i;
-				break;
-			}
+		x2 = x1 + maxlen_x;
+
+		for (unsigned int i = 1; i < y_coord.size(); i++) {
+            // when continuous and not the end
+            if (y_coord[i] == y_coord[i-1] + 1 && i != y_coord.size() - 1) {
+                len_y++;
+            }
+            // when break
+            else {
+                if (len_y > maxlen_y) {
+                    maxlen_y = len_y; // record max length
+                    y1 = start_y; // record the position
+                }
+                len_y = 0; // clear counter
+                start_y = y_coord[i]; // try new segment
+            }
 		}
-		for (int i = peak_pos_y; i >= 0; i--) {
-			if (y_axis->at(i) < edge_val_y) {
-				y1 = i;
-				break;
-			}
-		}
-		for (int i = peak_pos_y; i < max_y; i++) {
-			if (y_axis->at(i) < edge_val_y) {
-				y2 = i;
-				break;
-			}
-		}
+		y2 = y1 + maxlen_y;
+
 		return Mat_<float>(4,1) << (x1+x2)/2, (y1+y2)/2, (x2-x1)/2, (y2-y1)/2;
 	}
 }
