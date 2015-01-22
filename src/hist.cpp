@@ -24,7 +24,7 @@ void two_histogram(Mat *frame, vector<int> *x_axis, vector<int> *y_axis) {
 	// calculate two-side histogram at the same time
 	for (int i = 0; i < max_row; i++) {
 		for (int j = 0; j < max_col; j++) {
-			if (frame->at<char>(i,j) == 0xFF) {
+			if (static_cast<unsigned char>(frame->at<char>(i,j)) == 0xFF) {
 				x_axis->at(j)++;
 				y_axis->at(i)++;
 			}
