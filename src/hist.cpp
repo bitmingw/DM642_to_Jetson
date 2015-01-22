@@ -65,8 +65,8 @@ Mat_<float> hist_analysis(vector<int> *x_axis, vector<int> *y_axis,
 	}
 	else {
 		int x1 = 0, x2 = max_x-1, y1 = 0, y2 = max_y-1;
-		int edge_val_x = static_cast<int>(max_x * boundary_ratio);
-		int edge_val_y = static_cast<int>(max_y * boundary_ratio);
+		int edge_val_x = static_cast<int>(peak_val_x * boundary_ratio);
+		int edge_val_y = static_cast<int>(peak_val_y * boundary_ratio);
 
 		for (int i = peak_pos_x; i >= 0; i--) {
 			if (x_axis->at(i) < edge_val_x) {
