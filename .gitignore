@@ -1,4 +1,5 @@
 *.avi
+*.mov
 *.elf
 *.o
 *.so
