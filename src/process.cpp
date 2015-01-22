@@ -108,17 +108,19 @@ int three_diff_frame(VideoCapture *in_stream_ptr, int delay_ms,
 		// median filter
 		medianBlur(frame_disp, frame_disp, 5);
 		// binaryzation
-		// two-sided histogram
 		threshold(frame_disp, frame_disp, 20, 255, THRESH_BINARY);
-		two_histogram(&frame_disp, &x_axis, &y_axis);
-		obj_pos_range = hist_analysis(&x_axis, &y_axis, 0.05, 0.25);
 
-		// predict & update
-		kf.predict(control);
-		measurement(0) = obj_pos_range(0);
-		measurement(1) = obj_pos_range(1);	
-		estimated = kf.correct(measurement);
-		cout << estimated(0) << " " << estimated(1) << endl;
+		if (tracking) {
+			two_histogram(&frame_disp, &x_axis, &y_axis);
+			obj_pos_range = hist_analysis(&x_axis, &y_axis, 0.05, 0.25);
+
+			// predict & update
+			kf.predict(control);
+			measurement(0) = obj_pos_range(0);
+			measurement(1) = obj_pos_range(1);	
+			estimated = kf.correct(measurement);
+			cout << estimated(0) << " " << estimated(1) << endl;
+		}
 
 		// display video
 		imshow("camera", frame_disp);
