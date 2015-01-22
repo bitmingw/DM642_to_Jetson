@@ -20,8 +20,7 @@ void print_usage();
 
 // Display input video
 // return -1 when error happens, otherwise return the number of frames
-int display_video(cv::VideoCapture *in_stream_ptr, int delay_ms,
-	cv::VideoWriter *out_stream_ptr = NULL);
+int display_video(cv::VideoCapture *in_stream_ptr, int delay_ms);
 
 
 // Processing algorithm

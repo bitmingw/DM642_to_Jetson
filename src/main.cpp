@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	}
 
 	// try to open video port if -p is set
-	if (in_stream_port_str) {
+	else if (in_stream_port_str) {
 		in_stream_port = atoi(in_stream_port_str);
 		in_stream = VideoCapture(in_stream_port);
 		if (!in_stream.isOpened()) {
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 	} 
 	
 	// try to read video file if -i is set
-	if (in_stream_name) {
+	else if (in_stream_name) {
 		in_stream = VideoCapture(in_stream_name);
 		if (!in_stream.isOpened()) {
 			cerr << "Fatal error: can\'t read from video file " \
@@ -124,8 +124,21 @@ int main(int argc, char **argv)
 	int num_frames;
 	double tick_frequency = static_cast<double>(getTickFrequency());
 
-	// try to write video file if -o is set
-	if (out_stream_name) {
+	// display the video if -d is set
+	if (display_only) {
+		
+		if (performance_test) {
+			start_time = static_cast<double>(getTickCount());		
+		}
+		num_frames = display_video(&in_stream, delay);
+		if (performance_test) {
+			stop_time = static_cast<double>(getTickCount());
+		}
+
+	}
+
+	// process video, try to write video file if -o is set
+	else if (out_stream_name) {
 		cv::VideoWriter out_stream(out_stream_name, fourcc, 
 			frame_rate, frame_size); 
 		// if can't write to video file, terminate with error
@@ -139,13 +152,8 @@ int main(int argc, char **argv)
 			start_time = static_cast<double>(getTickCount());		
 		}
 
-		if (display_only) {
-			num_frames = display_video(&in_stream, delay, &out_stream);
-		}
-		else {
-			num_frames = three_diff_frame(&in_stream, delay,
-				&out_stream, kalman_tracking);
-		}
+		num_frames = three_diff_frame(&in_stream, delay,
+			&out_stream, kalman_tracking);
 
 		if (performance_test) {
 			stop_time = static_cast<double>(getTickCount());
@@ -156,19 +164,14 @@ int main(int argc, char **argv)
 		out_stream.release();
 	}
 
-	// don't write video to file
+	// process but don't write video to file
 	else {
 		if (performance_test) {
 			start_time = static_cast<double>(getTickCount());		
 		}
 
-		if (display_only) {
-			num_frames = display_video(&in_stream, delay);
-		}
-		else {
-			num_frames = three_diff_frame(&in_stream, delay,
-				NULL, kalman_tracking);
-		}
+		num_frames = three_diff_frame(&in_stream, delay,
+			NULL, kalman_tracking);
 
 		if (performance_test) {
 			stop_time = static_cast<double>(getTickCount());
