@@ -22,7 +22,7 @@ int main()
 		else if (i % 3 == 1) {
 			PTZ_stop(port_num);
 			usleep(100000);
-			PTZ_turn_left(port_num);
+			PTZ_stop(port_num);
 			sleep(1); // stop 1 second
 		}
 		else if (i % 3 == 2) {
